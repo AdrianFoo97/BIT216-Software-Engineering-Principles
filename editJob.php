@@ -66,8 +66,21 @@
         background: #181818;
     }
 
-    input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], input[type="url"], input[type="tel"], textarea {
+    input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="date"], input[type="time"], input[type="url"], input[type="tel"], textarea, select {
       border-radius: 3px;
+    }
+
+    input[type="date"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        display: none;
+    }
+    input[type="time"] {
+      background: #F4F4F4;
+      border-bottom: 2px solid #EEE;
+      color: #354052;
+      opacity: 0.5;
+      -webkit-transition: 0.2s border-color, 0.2s opacity;
+      transition: 0.2s border-color, 0.2s opacity;
     }
 
     .checkbox {
@@ -109,6 +122,7 @@
 	</style>
 </head>
 <body style="background-color: #ecf0f1;">
+  <script type="text/javascript" src="js/dateTimeValidation.js"></script>
 	<!-- Nav -->
 	<nav id="nav" class="navbar">
 		<div class="container">
@@ -116,7 +130,7 @@
 			<div class="navbar-header">
 				<!-- Logo -->
 				<div class="navbar-brand">
-					<a href="index.php">
+					<a href="jobPositions.php">
 						<img class="logo" src="img/logo.png" alt="logo">
 						<img class="logo-alt" src="img/logo-alt.png" alt="logo">
 					</a>
@@ -134,8 +148,8 @@
       <ul class="main-nav nav navbar-nav navbar-right">
 				<li><a href="jobPositions.php"><i class="fa fa-suitcase"></i>&nbsp;Jobs</a></li>
 				<li><a href="profile.php"><i class="fa fa-user"></i>&nbsp;Profile</a></li>
-				<li><a href="#message"><i class="fa fa-envelope"></i>&nbsp;Message</a></li>
-        <li><a href="#application"><i class="fa fa-suitcase"></i>&nbsp;Applications</a></li>
+				<li><a href="message.php"><i class="fa fa-envelope"></i>&nbsp;Message</a></li>
+        <li><a href="jobApplicationsSummary.php"><i class="fa fa-suitcase"></i>&nbsp;Applications</a></li>
 				<li><a href="index.php"><i class="fa fa-sign-out"></i>&nbsp;Logout</a></li>
 			</ul>
 			<!-- /Main navigation -->
@@ -154,7 +168,7 @@
                 <div class="overlay2">
                 </div>
               </div>
-              <form name="postJobForm" action="storeJob.php" method="post">
+              <form name="editJobForm" onsubmit="return validateDateTime()" action="storeJob.php" method="post">
                 <div class="row">
                   <div class="col-sm-offset-3 col-sm-6">
                     <h4 class="form-title">Edit Job Position</h4>
@@ -165,6 +179,8 @@
                           $query_jobpos = "SELECT * FROM jobposition WHERE theClient = $theClient AND jobID = $jobID";
                           $result_findJob = mysqli_query($connection, $query_jobpos);
                           while($row_jobPositions = mysqli_fetch_assoc($result_findJob)) {
+                            // set timezone to Malaysia
+                            date_default_timezone_set("Asia/Kuala_Lumpur");
                             echo '<input type="text" name="jobTitle" class="form-control" value = "' . $row_jobPositions['title'] .
                             '" required>
                               </div>
@@ -189,15 +205,88 @@
                             </div>
 
                             <div class="form-group">
-                              <label>City: </label>
+                                <label>City: </label>
                                 <div class="form-control-small">
-                                  <input type="text" name="jobCity" class="form-control" value = "'
-                                  . $row_jobPositions['city'] .
-                                  '" required>
+                                  <select name="jobCity">
+                                  <option value="At Home"';
+                                  if ($row_jobPositions['city'] == 'At Home'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>At Home</option>
+                                  <option value="Kuala Lumpur"';
+                                  if ($row_jobPositions['city'] == 'Kuala Lumpur'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Kuala Lumpur</option>
+                                  <option value="Petaling Jaya"';
+                                  if ($row_jobPositions['city'] == 'Petaling Jaya'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Petaling Jaya</option>
+                                  <option value="Shah Alam"';
+                                  if ($row_jobPositions['city'] == 'Shah Alam'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Shah Alam</option>
+                                  <option value="Melaka"';
+                                  if ($row_jobPositions['city'] == 'Melaka'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Melaka</option>
+                                  <option value="Ipoh"';
+                                  if ($row_jobPositions['city'] == 'Ipoh'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Ipoh</option>
+                                  <option value="Johor Bahru"';
+                                  if ($row_jobPositions['city'] == 'Johor Bahru'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Johor Bahru</option>
+                                  <option value="Iskandar Puteri"';
+                                  if ($row_jobPositions['city'] == 'Iskandar Puteri'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Iskandar Puteri</option>
+                                  <option value="Alor Setar"';
+                                  if ($row_jobPositions['city'] == 'Alor Setar'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Alor Setar</option>
+                                  <option value="George Town"';
+                                  if ($row_jobPositions['city'] == 'George Town'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>George Town</option>
+                                  <option value="Penang Island"';
+                                  if ($row_jobPositions['city'] == 'Penang Island'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Penang Island</option>
+                                  <option value="Kuala Terengganu"';
+                                  if ($row_jobPositions['city'] == 'Kuala Terengganu'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Kuala Terengganu</option>
+                                  <option value="Kuching"';
+                                  if ($row_jobPositions['city'] == 'Kuching'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Kuching</option>
+                                  <option value="Miri"';
+                                  if ($row_jobPositions['city'] == 'Miri'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Miri</option>
+                                  <option value="Kota Kinabalu"';
+                                  if ($row_jobPositions['city'] == 'Kota Kinabalu'){
+                                    echo ' selected ';
+                                  }
+                                  echo '>Kota Kinabalu</option>
+                                  </select>
                                 </div>
                                 <div id="jobCity_error" style="color:red;"></div>
                             </div>
-
 
                           <div class="form-group">
                               <label>Salary per hour ($): </label>
@@ -208,20 +297,41 @@
                           </div>
 
                           <div class="form-group">
-                            <label>Hours per week: </label>
+                            <label>Start Date: </label>
                             <div class="form-control-small">
-                                <input type="number" name="jobHours" class="form-control-small" min = "1" value="' .$row_jobPositions['hoursPerWeek']. '" required>
+                                <input type="date" name="startDate" class="form-control-small" value="' .$row_jobPositions['startDate']. '" required>
                             </div>
-                            <div id="jobHours_error" style="color:red;"></div>
+                            <div id="startDate_error" style="color:red;"></div>
                           </div>
 
                           <div class="form-group">
-                              <label>Duration (weeks): </label>
-                              <div class="form-control-small">
-                                <input type="number" name="jobDuration" class="form-control-small" min = "1" value = "' .$row_jobPositions['durationInWeeks']. '" required>
-                              </div>
-                              <div id="jobDuration_error" style="color:red;"></div>
+                            <label>End Date: </label>
+                            <div class="form-control-small">
+                                <input type="date" name="endDate" class="form-control-small" value="' .$row_jobPositions['endDate']. '" required>
+                            </div>
+                            <div id="endDate_error" style="color:red;"></div>
+                          </div>';
+
+                          // conversion of time
+                          $startTimeDisplay = date('H:i', strtotime($row_jobPositions['startTime']));
+                          $endTimeDisplay = date('H:i', strtotime($row_jobPositions['endTime']));
+                          echo '
+                          <div class="form-group">
+                            <label>Start Time: </label>
+                            <div class="form-control-small">
+                                <input type="time" name="startTime" class="form-control" value = "'. $startTimeDisplay .'" required>
+                            </div>
+                            <div id="startTime_error" style="color:red;"></div>
                           </div>
+
+                          <div class="form-group">
+                            <label>End Time: </label>
+                            <div class="form-control-small">
+                                <input type="time" name="endTime" class="form-control" value = "'. $endTimeDisplay .'" required>
+                            </div>
+                            <div id="endTime_error" style="color:red;"></div>
+                          </div>
+
 
                           <div class="form-group">
                               <label>Status: </label>
@@ -239,8 +349,6 @@
                                   <option value="NOT AVAILABLE">NOT AVAILABLE</option>
                                   ';
                                 }
-
-
 
                                 echo '
                                 </select>
@@ -301,7 +409,7 @@
 
                   <div style="text-align:right; margin-top:50px">
                     <a class="white-btn" href="jobPositions.php">Cancel</a>
-    								<button type="submit" name="updateJobBtn" class=" main-btn">Update</button>
+    								<button type="submit" id="updateJobBtn" name="updateJobBtn" class=" main-btn">Update</button>
     							</div>
 
                   </div>
@@ -329,7 +437,7 @@
 
 					<!-- footer logo -->
 					<div class="footer-logo">
-						<a href="index.php"><img src="img/logo-alt.png" alt="logo"></a>
+						<a href="jobPositions.php"><img src="img/logo-alt.png" alt="logo"></a>
 					</div>
 					<!-- /footer logo -->
 
@@ -346,7 +454,7 @@
 
 					<!-- footer copyright -->
 					<div class="footer-copyright">
-						<p>Copyright © 2017 AGN. All Rights Reserved.</p>
+						<p>Copyright © <?php echo date("Y");?> AGN. All Rights Reserved.</p>
 					</div>
 					<!-- /footer copyright -->
 

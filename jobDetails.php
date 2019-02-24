@@ -48,6 +48,17 @@
 		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 	<![endif]-->
 	<style>
+  .footer-follow li a i{
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    border-radius: 3px;
+    background-color: #6195FF;
+    color:#FFF;
+  }
+
 	.center {
     height: 70%;
     position: relative;
@@ -71,7 +82,13 @@
 			<div class="navbar-header">
 				<!-- Logo -->
 				<div class="navbar-brand">
-					<a href="index.php">
+          <?php
+  					if ($_SESSION['userType'] == 'Job Seeker') {
+  						echo '<a href="jobs.php">';
+  					} else if ($_SESSION['userType'] == 'Client') {
+  						echo '<a href="jobPositions.php">';
+  					}
+  				 ?>
 						<img class="logo" src="img/logo.png" alt="logo">
 						<img class="logo-alt" src="img/logo-alt.png" alt="logo">
 					</a>
@@ -87,10 +104,23 @@
 
 			<!--  Main navigation  -->
 			<ul class="main-nav nav navbar-nav navbar-right">
-				<li><a href="jobs.php"><i class="fa fa-suitcase"></i>&nbsp;Jobs</a></li>
+				<li><?php
+					if ($_SESSION['userType'] == 'Job Seeker') {
+						echo '<a href="jobs.php">';
+					} else if ($_SESSION['userType'] == 'Client') {
+						echo '<a href="jobPositions.php">';
+					}
+				 ?><i class="fa fa-suitcase"></i>&nbsp;Jobs</a></li>
 				<li><a href="profile.php"><i class="fa fa-user"></i>&nbsp;Profile</a></li>
-				<li><a href="#message"><i class="fa fa-envelope"></i>&nbsp;Message</a></li>
-        <li><a href="#application"><i class="fa fa-suitcase"></i>&nbsp;Application</a></li>
+				<li><a href="message.php"><i class="fa fa-envelope"></i>&nbsp;Message</a></li>
+        <li><?php
+					if ($_SESSION['userType'] == 'Job Seeker') {
+						echo '<a href="jobApplications.php">';
+					} else if ($_SESSION['userType'] == 'Client') {
+						echo '<a href="jobApplicationsSummary.php">';
+					}
+				 ?>
+         <i class="fa fa-suitcase"></i>&nbsp;Application</a></li>
 				<li><a href="index.php"><i class="fa fa-sign-out"></i>&nbsp;Logout</a></li>
 			</ul>
 			<!-- /Main navigation -->
@@ -161,13 +191,56 @@
 						<div>
 							<ul style="margin-left:1em;">
 								<?php
-								$jobID = $_POST['jobID'];
+                $jobID = $_POST['jobID'];
+                $query2 = "SELECT skill.skillName FROM jobrequiredskill, skill WHERE jobID = '$jobID'
+    											AND jobrequiredskill.skillID=skill.skillID";
+    						$result2 = mysqli_query($connection, $query2);
+
+    						if (mysqli_num_rows($result2) > 0) {
+    							echo "Skills Required: ";
+    							$counter = 0;
+    							while ($row = mysqli_fetch_assoc($result2)) {
+    								$counter += 1;
+    								echo "
+    								<li>&nbsp;<i class='fa fa-check-circle' style='font-size:18px;color:green'></i>&nbsp;&nbsp;&nbsp;" . $row['skillName'] . "</li>
+    								";
+    							}
+    						}
+
+                echo "<br>";
+
 								$query = "SELECT * FROM jobposition WHERE jobID='$jobID'";
 								$result = mysqli_query($connection, $query);
 								if (mysqli_num_rows($result) > 0) {
 									while ($row = mysqli_fetch_assoc($result)) {
-										$totalSalary = $row['salaryPerHour'] * $row['hoursPerWeek'] * $row['durationInWeeks'];
-										echo "<li>Salary:&nbsp;&nbsp;RM";
+                    $startDate = $row['startDate'];
+                    $endDate = $row['endDate'];
+                    $startTime = $row['startTime'];
+                    $endTime = $row['endTime'];
+
+                    // convert startDate format
+                    $startDateDisplay = date("j M Y", strtotime($startDate));
+                    // convert endDate format
+                    $endDateDisplay = date("j M Y", strtotime($endDate));
+                    // convert startTime format
+                    $startTimeDisplay = date('g:i A', strtotime($startTime));
+                    // convert endTime format
+                    $endTimeDisplay = date('g:i A', strtotime($endTime));
+
+                    echo '<li>
+                      <i class="fa fa-calendar-check-o"></i>&nbsp;Start date: '. $startDateDisplay .'
+                      <br>
+                      <i class="fa fa-calendar-check-o"></i>&nbsp;End date: '. $endDateDisplay .'
+                    </li>
+                    <li>
+                      <i class="fa fa-clock-o"></i>&nbsp;Start time: '. $startTimeDisplay .'
+                      <br>
+                      <i class="fa fa-clock-o"></i>&nbsp;End time: '. $endTimeDisplay .'
+                    </li>
+                    <br>';
+
+										$totalSalary = $row['salaryPerHour'];
+										echo "<li>Salary per hour:&nbsp;&nbsp;RM";
 										echo $totalSalary;
 										echo "</li>";
 
@@ -213,6 +286,8 @@
 									$result = mysqli_query($connection, $query);
 									if (mysqli_num_rows($result) > 0) {
 										while ($row = mysqli_fetch_assoc($result)) {
+											$_SESSION['companyName'] = $row['companyName'];
+
 											echo "<li style='text-align: center;'><h5>";
 											echo $row['companyName'];
 											echo "</h5></li>";
@@ -237,8 +312,13 @@
 									?>
 								</ul><br />
 								<div style="text-align:center;">
-									<form>
-										<input class="main-btn" type="button" value="Message">
+									<form action="sendMessage.php" method="post">
+										<?php
+											echo "
+											<input type='hidden' value='" . $_SESSION['companyName']
+											. "' name='senderName'>";
+										?>
+										<input class="main-btn" type="submit" value="Message">
 									</form>
 								</div>
 							</div>
@@ -263,7 +343,14 @@
 
 					<!-- footer logo -->
 					<div class="footer-logo">
-						<a href="index.php"><img src="img/logo-alt.png" alt="logo"></a>
+            <?php
+    					if ($_SESSION['userType'] == 'Job Seeker') {
+    						echo '<a href="jobs.php">';
+    					} else if ($_SESSION['userType'] == 'Client') {
+    						echo '<a href="jobPositions.php">';
+    					}
+    				 ?>
+             <img src="img/logo-alt.png" alt="logo"></a>
 					</div>
 					<!-- /footer logo -->
 
@@ -280,7 +367,7 @@
 
 					<!-- footer copyright -->
 					<div class="footer-copyright">
-						<p>Copyright © 2017 AGN. All Rights Reserved. Designed by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
+						<p>Copyright © <?php echo date("Y");?> AGN. All Rights Reserved. Designed by <a href="https://colorlib.com" target="_blank">Colorlib</a></p>
 					</div>
 					<!-- /footer copyright -->
 
@@ -329,4 +416,3 @@
 	<script type="text/javascript" src="js/main.js"></script>
 </body>
 </html>
-]

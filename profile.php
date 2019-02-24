@@ -112,7 +112,13 @@
 			<div class="navbar-header">
 				<!-- Logo -->
 				<div class="navbar-brand">
-					<a href="index.php">
+					<?php
+						if ($_SESSION['userType'] == 'Job Seeker') {
+							echo '<a href="jobs.php">';
+						} else if ($_SESSION['userType'] == 'Client') {
+							echo '<a href="jobPositions.php">';
+						}
+					 ?>
 						<img class="logo" src="img/logo.png" alt="logo">
 						<img class="logo-alt" src="img/logo-alt.png" alt="logo">
 					</a>
@@ -138,8 +144,16 @@
 				 ?>
 				<i class="fa fa-suitcase"></i>&nbsp;Jobs</a></li>
 				<li class="active"><a href="profile.php"><i class="fa fa-user"></i>&nbsp;Profile</a></li>
-				<li><a href="#message"><i class="fa fa-envelope"></i>&nbsp;Message</a></li>
-        <li><a href="#application"><i class="fa fa-suitcase"></i>&nbsp;Applications</a></li>
+				<li><a href="message.php"><i class="fa fa-envelope"></i>&nbsp;Message</a></li>
+        <li>
+					<?php
+						if ($_SESSION['userType'] == 'Job Seeker') {
+							echo '<a href="jobApplications.php">';
+						} else if ($_SESSION['userType'] == 'Client') {
+							echo '<a href="jobApplicationsSummary.php">';
+						}
+					 ?>
+					<i class="fa fa-suitcase"></i>&nbsp;Applications</a></li>
 				<li><a href="index.php"><i class="fa fa-sign-out"></i>&nbsp;Logout</a></li>
 			</ul>
 			<!-- /Main navigation -->
@@ -147,7 +161,7 @@
 		</div>
 	</nav>
 	<!-- /Nav -->
-	<form action="updateProfile.php" method="post">
+
 	<div class = "container-fluid">
 		<div class = "row">
 			<div class = "col-sm-12 col-xs-12" style = "padding:0;">
@@ -161,6 +175,7 @@
 							<div class="row">
                 <div class="col-sm-offset-3 col-sm-6 col-xs-12">
 									<div class ="card">
+										<form action="updateProfile.php" method="post">
 										<h2 style="margin:0; color:	#696969;">Edit Profile</h2><br />
 
 										  <div class = "form-group">
@@ -288,6 +303,7 @@
 															<input type="submit" class="btn btn-default" value="Update"></input>
 														</div>
 										  </div>
+										</form>
 									</div>
 								</div>
 							</div>
@@ -312,7 +328,14 @@
 
 					<!-- footer logo -->
 					<div class="footer-logo">
-						<a href="index.php"><img src="img/logo-alt.png" alt="logo"></a>
+						<?php
+							if ($_SESSION['userType'] == 'Job Seeker') {
+								echo '<a href="jobs.php">';
+							} else if ($_SESSION['userType'] == 'Client') {
+								echo '<a href="jobPositions.php">';
+							}
+						 ?>
+						 <img src="img/logo-alt.png" alt="logo"></a>
 					</div>
 					<!-- /footer logo -->
 
@@ -329,7 +352,7 @@
 
 					<!-- footer copyright -->
 					<div class="footer-copyright">
-						<p>Copyright © 2017 AGN. All Rights Reserved.</p>
+						<p>Copyright © <?php echo date("Y");?> AGN. All Rights Reserved.</p>
 					</div>
 					<!-- /footer copyright -->
 
